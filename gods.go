@@ -23,22 +23,22 @@ import (
 )
 
 const (
-	bpsSign   = "á"
-	kibpsSign = "â"
-	mibpsSign = "ã"
+	bpsSign   = "b"
+	kibpsSign = "K"
+	mibpsSign = "M"
 
-	unpluggedSign = "è"
-	pluggedSign   = "é"
+	unpluggedSign = ""
+	pluggedSign   = ""
 
-	cpuSign = "Ï"
-	memSign = "Þ"
+	cpuSign = ""
+	memSign = ""
 
-	netReceivedSign    = "Ð"
-	netTransmittedSign = "Ñ"
+	netReceivedSign    = "⮮"
+	netTransmittedSign = "⮭"
 
-	floatSeparator = "à"
-	dateSeparator  = "Ý"
-	fieldSeparator = "û"
+	floatSeparator = "."
+	dateSeparator  = ""
+	fieldSeparator = " "
 )
 
 var (
@@ -172,11 +172,11 @@ func updatePower() string {
 	}
 
 	if enPerc <= 5 {
-		return fmt.Sprintf("%s%3d", icon, enPerc)
+		return fmt.Sprintf("%s%3d%%", icon, enPerc)
 	} else if enPerc <= 10 {
-		return fmt.Sprintf("%s%3d", icon, enPerc)
+		return fmt.Sprintf("%s%3d%%", icon, enPerc)
 	}
-	return fmt.Sprintf("%s%3d", icon, enPerc)
+	return fmt.Sprintf("%s%3d%%", icon, enPerc)
 }
 
 // updateCPUUse reads the last minute sysload and scales it to the core count
@@ -236,12 +236,12 @@ func main() {
 			updateCPUUse(),
 			updateMemUse(),
 			updatePower(),
-			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04:05"),
+			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
 		}
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
 
 		// sleep until beginning of next second
-		var now = time.Now()
-		time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
+		//var now = time.Now()
+		time.Sleep(5)
 	}
 }
