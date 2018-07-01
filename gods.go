@@ -241,7 +241,8 @@ func main() {
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
 
 		// sleep until beginning of next second
-		//var now = time.Now()
-		time.Sleep(5)
+		var now = time.Now()
+		time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
+		// time.Sleep(5)
 	}
 }
