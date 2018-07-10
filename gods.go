@@ -78,9 +78,9 @@ func fixed(pre string, rate int) string {
 
 	var formated = ""
 	if rate >= 100 {
-		formated = fmt.Sprintf("%3d", rate)
+		formated = fmt.Sprintf(" %3d", rate)
 	} else if rate >= 10 {
-		formated = fmt.Sprintf("%2d.%1d", rate, decDigit)
+		formated = fmt.Sprintf(" %2d.%1d", rate, decDigit)
 	} else {
 		formated = fmt.Sprintf(" %1d.%1d", rate, decDigit)
 	}
