@@ -28,7 +28,11 @@ const (
 	kibpsSign = "K"
 	mibpsSign = "M"
 
-	unpluggedSign = ""
+	batterySign100 = ""
+	batterySign75 = ""
+	batterySign50 = ""
+	batterySign25 = ""
+	batterySign10 = ""
 	pluggedSign   = ""
 
 	cpuSign = ""
@@ -173,15 +177,19 @@ func updatePower() string {
 	}
 
 	enPerc = enNow * 100 / enFull
-	var icon = unpluggedSign
+	var icon = batterySign100
 	if string(plugged) == "1\n" {
 		icon = pluggedSign
-	}
-
-	if enPerc <= 5 {
-		return fmt.Sprintf("%s%3d%%", icon, enPerc)
 	} else if enPerc <= 10 {
-		return fmt.Sprintf("%s%3d%%", icon, enPerc)
+		icon = batterySign10
+	} else if enPerc <= 25 {
+		icon = batterySign25
+	} else if enPerc <= 50 {
+		icon = batterySign50
+	} else if enPerc <= 75 {
+		icon = batterySign75
+	} else if enPerc <= 100 {
+		icon = batterySign100
 	}
 	return fmt.Sprintf("%s%3d%%", icon, enPerc)
 }
