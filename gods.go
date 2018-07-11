@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"regexp"
 )
 
 const (
@@ -31,10 +32,17 @@ const (
 	pluggedSign   = ""
 
 	cpuSign = ""
+	cpuTempSign = ""
 	memSign = ""
 
 	netReceivedSign    = "⮮"
 	netTransmittedSign = "⮭"
+
+	volSign = ""
+	mutedSign = ""
+
+	wifiSign = ""
+	keyboardSign = ""
 
 	floatSeparator = "."
 	dateSeparator  = ""
@@ -226,13 +234,31 @@ func updateMemUse() string {
 	return fmt.Sprintf("%s%3d", memSign, used*100/total)
 }
 
+func updateVolume() string {
+	var out, err = exec.Command("pacmd", "list-sinks").Output()
+	if err != nil {
+		return mutedSign + "ERR"
+	}
+	var sign = volSign
+	pacmd := string(out)
+	mutedRx := regexp.MustCompile(`(?s).*volume: front-left: .* (\d*%) /.*front-right: .* (\d*%).*muted: (yes|no).*`)
+	pacmdMatch := mutedRx.FindStringSubmatch(pacmd)
+	if pacmdMatch[3] == "yes" {
+		sign = mutedSign
+	}
+	return sign + " " + pacmdMatch[1]
+}
+
 // main updates the dwm statusbar every second
 func main() {
 	for {
 		var status = []string{
 			"",
+			updateVolume(),
+			//updateWifi(),
 			updateNetUse(),
 			updateCPUUse(),
+			//updateCPUTemp(),
 			updateMemUse(),
 			updatePower(),
 			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
