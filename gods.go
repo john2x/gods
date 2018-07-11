@@ -262,6 +262,25 @@ func updateWifi() string {
 	}
 }
 
+func updateCPUTemp() string {
+	var file, err = os.Open("/sys/class/thermal/thermal_zone1/temp")
+	if err != nil {
+		return cpuTempSign + " ERR"
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var tempStr = " ERR"
+	for scanner.Scan() {
+		tempStr = scanner.Text()
+	}
+	temp, err := strconv.Atoi(tempStr)
+	if err != nil {
+		return cpuTempSign + " ERR"
+	}
+	temp = temp / 1000
+	return fmt.Sprintf("%s %d°C", cpuTempSign, temp)
+}
+
 // main updates the dwm statusbar every second
 func main() {
 	for {
@@ -271,10 +290,11 @@ func main() {
 			updateWifi(),
 			updateNetUse(),
 			updateCPUUse(),
-			//updateCPUTemp(),
+			updateCPUTemp(),
 			updateMemUse(),
 			updatePower(),
 			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
+			"",
 		}
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
 
