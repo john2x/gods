@@ -281,6 +281,20 @@ func updateCPUTemp() string {
 	return fmt.Sprintf("%s %d°C", cpuTempSign, temp)
 }
 
+func updateKeyboard() string {
+	var file, err = os.Open("/home/john/.config/xmodmap_switcher/state")
+	if err != nil {
+		return keyboardSign + " default"
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var keyboard = "default"
+	for scanner.Scan() {
+		keyboard = scanner.Text()
+	}
+	return keyboardSign + " " + keyboard
+}
+
 // main updates the dwm statusbar every second
 func main() {
 	for {
@@ -294,6 +308,7 @@ func main() {
 			updateMemUse(),
 			updatePower(),
 			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
+			updateKeyboard(),
 			"",
 		}
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
