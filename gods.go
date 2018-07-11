@@ -237,7 +237,7 @@ func updateMemUse() string {
 func updateVolume() string {
 	var out, err = exec.Command("pacmd", "list-sinks").Output()
 	if err != nil {
-		return mutedSign + "ERR"
+		return mutedSign + " ERR"
 	}
 	var sign = volSign
 	pacmd := string(out)
@@ -249,13 +249,26 @@ func updateVolume() string {
 	return sign + " " + pacmdMatch[1]
 }
 
+func updateWifi() string {
+	var out, err = exec.Command("awk", "NR==3 {printf \"%3.0f\" ,($3/70)*100}", "/proc/net/wireless").Output()
+	if err != nil {
+		return wifiSign + " ERR"
+	}
+	strength := strings.Trim(string(out), " ")
+	if strength != "" {
+		return wifiSign + " " + strength + "%"
+	} else {
+		return wifiSign + " 0%"
+	}
+}
+
 // main updates the dwm statusbar every second
 func main() {
 	for {
 		var status = []string{
 			"",
 			updateVolume(),
-			//updateWifi(),
+			updateWifi(),
 			updateNetUse(),
 			updateCPUUse(),
 			//updateCPUTemp(),
