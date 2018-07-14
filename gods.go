@@ -303,8 +303,26 @@ func updateKeyboard() string {
 	return keyboardSign + " " + keyboard
 }
 
+func getDistroSign() string {
+	var out, err = exec.Command("uname", "-a").Output()
+	if err != nil {
+		return ""
+	}
+	uname := string(out)
+	distroRx := regexp.MustCompile(`.*(arch|slackware).*`)
+	distroMatch := distroRx.FindStringSubmatch(uname)
+	if distroMatch[1] == "arch" {
+		return ""
+	} else if distroMatch[1] == "slackware" {
+		return ""
+	} else {
+		return ""
+	}
+}
+
 // main updates the dwm statusbar every second
 func main() {
+	distroSign := getDistroSign()
 	for {
 		var status = []string{
 			"",
@@ -317,7 +335,7 @@ func main() {
 			updatePower(),
 			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
 			updateKeyboard(),
-			"",
+			distroSign,
 		}
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
 
