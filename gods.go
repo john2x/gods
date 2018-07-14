@@ -43,7 +43,7 @@ const (
 	netTransmittedSign = "⮭"
 
 	volSign = ""
-	mutedSign = ""
+	mutedSign = ""
 
 	wifiSign = ""
 	keyboardSign = ""
