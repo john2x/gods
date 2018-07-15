@@ -309,11 +309,13 @@ func getDistroSign() string {
 		return ""
 	}
 	uname := string(out)
-	distroRx := regexp.MustCompile(`.*(arch|slackware).*`)
+	distroRx := regexp.MustCompile(`.*(arch|slack).*`)
 	distroMatch := distroRx.FindStringSubmatch(uname)
-	if distroMatch[1] == "arch" {
+	if len(distroMatch) == 1 {
+		return ""
+	} else if distroMatch[1] == "arch" {
 		return ""
-	} else if distroMatch[1] == "slackware" {
+	} else if distroMatch[1] == "slack" {
 		return ""
 	} else {
 		return ""
