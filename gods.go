@@ -28,28 +28,28 @@ const (
 	kibpsSign = "K"
 	mibpsSign = "M"
 
-	batterySign100 = ""
-	batterySign75 = ""
-	batterySign50 = ""
-	batterySign25 = ""
-	batterySign10 = ""
-	pluggedSign   = ""
+	batterySign100 = ""
+	batterySign75 = ""
+	batterySign50 = ""
+	batterySign25 = ""
+	batterySign10 = ""
+	pluggedSign   = ""
 
-	cpuSign = ""
-	cpuTempSign = ""
-	memSign = ""
+	cpuSign = ""
+	cpuTempSign = ""
+	memSign = ""
 
-	netReceivedSign    = "⮮"
-	netTransmittedSign = "⮭"
+	netReceivedSign    = ""
+	netTransmittedSign = ""
 
-	volSign = ""
-	mutedSign = ""
+	volSign = ""
+	mutedSign = ""
 
-	wifiSign = ""
-	keyboardSign = ""
+	wifiSign = ""
+	keyboardSign = ""
 
 	floatSeparator = "."
-	dateSeparator  = ""
+	dateSeparator  = ""
 	fieldSeparator = " "
 )
 
@@ -312,13 +312,13 @@ func getDistroSign() string {
 	distroRx := regexp.MustCompile(`.*(arch|slack).*`)
 	distroMatch := distroRx.FindStringSubmatch(uname)
 	if len(distroMatch) == 1 {
-		return ""
+		return ""
 	} else if distroMatch[1] == "arch" {
-		return ""
+		return ""
 	} else if distroMatch[1] == "slack" {
-		return ""
+		return ""
 	} else {
-		return ""
+		return ""
 	}
 }
 
@@ -335,7 +335,7 @@ func main() {
 			updateCPUTemp(),
 			updateMemUse(),
 			updatePower(),
-			time.Now().Local().Format("Mon 02 " + dateSeparator + " 15:04"),
+			time.Now().Local().Format(dateSeparator + "Mon Jul 02 15:04"),
 			updateKeyboard(),
 			distroSign,
 		}
