@@ -45,7 +45,11 @@ const (
 	volSign = ""
 	mutedSign = ""
 
-	wifiSign = ""
+	wifiSignFull = ""
+	wifiSignHalf = ""
+	wifiSignLow = ""
+	wifiSignOff = ""
+
 	keyboardSign = ""
 
 	floatSeparator = "."
@@ -260,13 +264,27 @@ func updateVolume() string {
 func updateWifi() string {
 	var out, err = exec.Command("awk", "NR==3 {printf \"%3.0f\" ,($3/70)*100}", "/proc/net/wireless").Output()
 	if err != nil {
-		return wifiSign + " ERR"
+		return wifiSignOff + " ERR"
 	}
 	strength := strings.Trim(string(out), " ")
 	if strength != "" {
+		strengthInt, err := strconv.Atoi(strength)
+		if err != nil {
+			return wifiSignOff + " ERR"
+		}
+		var wifiSign = wifiSignFull
+		if strengthInt > 70 {
+			wifiSign = wifiSignFull
+		} else if strengthInt > 50 {
+			wifiSign = wifiSignHalf
+		} else if strengthInt > 20 {
+			wifiSign = wifiSignLow
+		} else {
+			wifiSign = wifiSignOff
+		}
 		return wifiSign + " " + strength + "%"
 	} else {
-		return wifiSign + " 0%"
+		return wifiSignOff + " 0%"
 	}
 }
 
