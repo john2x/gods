@@ -221,10 +221,10 @@ func updateMemUse() string {
 	defer file.Close()
 
 	// done must equal the flag combination (0001 | 0010 | 0100 | 1000) = 15
-	var total, used, done = 0, 0, 0
+	var used, total, done = 0.0, 0.0, 0
 	for info := bufio.NewScanner(file); done != 15 && info.Scan(); {
-		var prop, val = "", 0
-		if _, err = fmt.Sscanf(info.Text(), "%s %d", &prop, &val); err != nil {
+		var prop, val = "", 0.0
+		if _, err = fmt.Sscanf(info.Text(), "%s %f", &prop, &val); err != nil {
 			return memSign + "ERR"
 		}
 		switch prop {
@@ -243,7 +243,9 @@ func updateMemUse() string {
 			done |= 8
 		}
 	}
-	return fmt.Sprintf("%s%3d", memSign, used*100/total)
+	used = used / 1024 / 1024
+	total = total / 1024 / 1024
+	return fmt.Sprintf("%s%.2f/%.2fGB", memSign, used, total)
 }
 
 func updateVolume() string {
