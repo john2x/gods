@@ -209,7 +209,7 @@ func updateCPUUse() string {
 	if err != nil {
 		return cpuSign + "ERR"
 	}
-	return fmt.Sprintf("%s%3d", cpuSign, int(load*100.0/float32(cores)))
+	return fmt.Sprintf("%s%3d%%", cpuSign, int(load*100.0/float32(cores)))
 }
 
 // updateMemUse reads the memory used by applications and scales to [0, 100]
