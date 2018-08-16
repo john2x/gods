@@ -95,7 +95,7 @@ func fixed(pre string, rate int) string {
 	if rate >= 100 {
 		formated = fmt.Sprintf(" %3d", rate)
 	} else if rate >= 10 {
-		formated = fmt.Sprintf(" %2d.%1d", rate, decDigit)
+		formated = fmt.Sprintf("%2d.%1d", rate, decDigit)
 	} else {
 		formated = fmt.Sprintf(" %1d.%1d", rate, decDigit)
 	}
@@ -245,7 +245,7 @@ func updateMemUse() string {
 	}
 	used = used / 1024 / 1024
 	total = total / 1024 / 1024
-	return fmt.Sprintf("%s%.2f/%.2fGB", memSign, used, total)
+	return fmt.Sprintf("%s %.2f/%.2fGB", memSign, used, total)
 }
 
 func updateVolume() string {
@@ -284,7 +284,13 @@ func updateWifi() string {
 		} else {
 			wifiSign = wifiSignOff
 		}
-		return wifiSign + " " + strength + "%"
+		if strengthInt >= 100 {
+			return wifiSign + "" + strength + "%"
+		} else if strengthInt >= 10 {
+			return wifiSign + " " + strength + "%"
+		} else {
+			return wifiSign + "  " + strength + "%"
+		}
 	} else {
 		return wifiSignOff + " 0%"
 	}
