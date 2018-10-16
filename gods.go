@@ -41,11 +41,12 @@ const (
 
 	netReceivedSign    = "⮮"
 	netTransmittedSign = "⮭"
+	pingSign = "⭿"
 
 	volSign = ""
 	mutedSign = ""
 
-	wifiSignFull = "⠇"
+	wifiSignFull = "⡆"
 	wifiSignHalf = "⡄"
 	wifiSignLow = "⡀"
 	wifiSignOff = "⨯"
@@ -122,8 +123,24 @@ func updateNetUse() string {
 		}
 	}
 
+	// attempt to read avgping file
+	// add the following to your crontab:
+	// */1 * * * * ping -c 4 www.google.com -s 16 | tail -1| awk '{print $4}' | cut -d '/' -f 2 > /home/john/tmp/avgping2 && mv /home/john/tmp/avgping2 /home/john/tmp/avgping
+	var avgping, err2 = ioutil.ReadFile("/home/john/tmp/avgping")
+	var ping, pingAvg = "", 0.0
+	if err2 != nil {
+		ping = ""
+	} else {
+		_, err = fmt.Sscanf(string(avgping), "%f", &pingAvg)
+		if err != nil {
+			ping = " " + pingSign + "0.0ms"
+		} else {
+			ping = fmt.Sprintf(" %s %dms", pingSign, int(pingAvg))
+		}
+	}
+
 	defer func() { rxOld, txOld = rxNow, txNow }()
-	return fmt.Sprintf("%s %s", fixed(netReceivedSign, rxNow-rxOld), fixed(netTransmittedSign, txNow-txOld))
+	return fmt.Sprintf("%s %s%s", fixed(netReceivedSign, rxNow-rxOld), fixed(netTransmittedSign, txNow-txOld), ping)
 }
 
 // colored surrounds the percentage with color escapes if it is >= 70
@@ -182,8 +199,12 @@ func updatePower() string {
 
 	enPerc = enNow * 100 / enFull
 	var icon = batterySign100
+	var icon2 = ""
 	if string(plugged) == "1\n" {
 		icon = pluggedSign
+		if enPerc <= 98 {
+			icon2 = ""
+		}
 	} else if enPerc <= 10 {
 		icon = batterySign10
 	} else if enPerc <= 25 {
@@ -194,8 +215,25 @@ func updatePower() string {
 		icon = batterySign75
 	} else if enPerc <= 100 {
 		icon = batterySign100
+		icon2 = ""
 	}
-	return fmt.Sprintf("%s%3d%%", icon, enPerc)
+	return fmt.Sprintf("%s%s%3d%%", icon, icon2, enPerc)
+}
+
+// updatePowerTime runs acpi -b to get the time to deplete/full charge the battery
+func updatePowerTime() string {
+	var out, err = exec.Command("acpi", "-b").Output()
+	if err != nil {
+		return "unknown"
+	}
+	acpi := string(out)
+	timeRx := regexp.MustCompile(`.*(\d\d:\d\d:\d\d).*`)
+	acpiMatch := timeRx.FindStringSubmatch(acpi)
+	if len(acpiMatch) == 1 {
+		return "unknown"
+	} else {
+		return acpiMatch[1][0:5]
+	}
 }
 
 // updateCPUUse reads the last minute sysload and scales it to the core count
@@ -361,6 +399,7 @@ func main() {
 			updateCPUTemp(),
 			updateMemUse(),
 			updatePower(),
+			updatePowerTime(),
 			time.Now().Local().Format(dateSeparator + " Mon Jan 02 15:04"),
 			updateKeyboard(),
 			distroSign,
