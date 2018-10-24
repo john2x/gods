@@ -64,6 +64,7 @@ var (
 		"eth1:": {},
 		"wlan0:": {},
 		"ppp0:": {},
+		"wlp4s0:": {},
 	}
 	cores = runtime.NumCPU() // count of cores to scale cpu usage
 	rxOld = 0
