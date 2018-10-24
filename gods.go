@@ -400,7 +400,7 @@ func main() {
 			updateCPUTemp(),
 			updateMemUse(),
 			updatePower(),
-			updatePowerTime(),
+			//updatePowerTime(),
 			time.Now().Local().Format(dateSeparator + " Mon Jan 02 15:04"),
 			updateKeyboard(),
 			distroSign,
@@ -408,8 +408,8 @@ func main() {
 		exec.Command("xsetroot", "-name", strings.Join(status, fieldSeparator)).Run()
 
 		// sleep until beginning of next second
-		var now = time.Now()
-		time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
-		// time.Sleep(5)
+		// var now = time.Now()
+		// time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
+		time.Sleep(5 * time.Second)
 	}
 }
