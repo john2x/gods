@@ -51,6 +51,9 @@ const (
 	wifiSignLow = "⡀"
 	wifiSignOff = "⨯"
 
+	vpnOn = ""
+	vpnOff = ""
+
 	keyboardSign = ""
 
 	floatSeparator = "."
@@ -368,6 +371,22 @@ func updateKeyboard() string {
 	return keyboardSign + " " + keyboard
 }
 
+func updateVpn() string {
+	out, err := exec.Command("nmcli", "conn", "show", "--active").Output()
+
+	if err != nil {
+		return vpnOff
+	}
+	res := string(out)
+	for _, line := range strings.Split(strings.TrimSuffix(res, "\n"), "\n") {
+		if strings.Contains(line, " vpn ") {
+			vpnName := strings.Split(line, " ")[0]
+			return vpnOn + " " + vpnName
+		}
+	}
+	return vpnOff
+}
+
 func getDistroSign() string {
 	var out, err = exec.Command("uname", "-a").Output()
 	if err != nil {
@@ -395,6 +414,7 @@ func main() {
 			"",
 			updateVolume(),
 			updateWifi(),
+			updateVpn(),
 			updateNetUse(),
 			updateCPUUse(),
 			updateCPUTemp(),
